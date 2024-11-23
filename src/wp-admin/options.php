@@ -26,23 +26,25 @@ wp_reset_vars( array( 'action', 'option_page' ) );
 
 $capability = 'manage_options';
 
-// This is for back compat and will eventually be removed.
+/**
+ * Ensure $option_page defaults to 'options' if not set.
+ * This avoids bypassing the capability filter when wp-admin/options.php is accessed directly.
+ */
 if ( empty( $option_page ) ) {
-	$option_page = 'options';
-} else {
-
-	/**
-	 * Filters the capability required when using the Settings API.
-	 *
-	 * By default, the options groups for all registered settings require the manage_options capability.
-	 * This filter is required to change the capability required for a certain options page.
-	 *
-	 * @since 3.2.0
-	 *
-	 * @param string $capability The capability used for the page, which is manage_options by default.
-	 */
-	$capability = apply_filters( "option_page_capability_{$option_page}", $capability );
+    $option_page = 'options';
 }
+
+/**
+ * Filters the capability required when using the Settings API.
+ *
+ * By default, the options groups for all registered settings require the manage_options capability.
+ * This filter is required to change the capability required for a certain options page.
+ *
+ * @since 3.2.0
+ *
+ * @param string $capability The capability used for the page, which is manage_options by default.
+ */
+$capability = apply_filters( "option_page_capability_{$option_page}", $capability );
 
 if ( ! current_user_can( $capability ) ) {
 	wp_die(
